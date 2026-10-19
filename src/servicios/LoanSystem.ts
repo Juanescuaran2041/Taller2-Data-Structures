@@ -56,7 +56,7 @@ export class LoanSystem {
         }
     }
 
-    loadInventory(seeds: EquipmentSeed[]): OperationalResult | undefined {
+    loadInventory(seeds: EquipmentSeed[]): OperationalResult {
         let loaded = 0;
 
         for (const seed of seeds) {
@@ -75,9 +75,7 @@ export class LoanSystem {
             }
 
             loaded++;
-
-
-        };
+        }
         const response: OperationalResult = {
             ok: true,
             msg: `Inventario cargado correctamente. Equipos registrados: ${loaded}.`
@@ -108,7 +106,7 @@ export class LoanSystem {
         const first = this.storeQueue.peek()
 
         if (first === null) {
-            return null
+            return
         }
 
         const targetCart = this.carts.get(first.getType()!)
@@ -120,14 +118,14 @@ export class LoanSystem {
         }
     }
 
-    request(student: string, type: TypeOfEquipment, hour: number){
+    request(student: string, type: TypeOfEquipment, hour: number): OperationalResult {
         // evaluate if student is in Mora
         if (this.isLate(student, hour)){
-            return {ok: false, msg:"El estudiante tiene asociado un prestamo que ya esta vencido"}
+            return {ok: false, msg: `R6: ${student} esta en mora y no puede solicitar equipos`}
         }
         // evaluate if student has already requested a lend with the same type of equipment
-        if (this.holdsType(student, type) || this.waitQueue.get(type)?.contains(student)){
-            return {ok:false, msg: `${student} ya tiene o espera un equipo de tipo ${type}`}
+        if (this.holdsType(student, type) || this.waitQueue.get(type)!.contains(student)){
+            return {ok:false, msg: `R1: ${student} ya tiene o espera un equipo de tipo ${type}`}
         }
 
         //if carts is empty its redirectionated to waitQueue
@@ -158,9 +156,9 @@ export class LoanSystem {
     
     }
 
-    private holdsType(studentCode:string, type:TypeOfEquipment){
+    private holdsType(studentCode:string, type:TypeOfEquipment): boolean {
         for (const equipment of this.inventory.toArray()){
-            if (this.borrowers.get(equipment.getCode()) === studentCode && equipment.getType() == type){
+            if (this.borrowers.get(equipment.getCode()) === studentCode && equipment.getType() === type){
                 return true
             }
         }
