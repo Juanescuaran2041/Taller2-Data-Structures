@@ -165,7 +165,7 @@ export class LoanSystem {
         return false
     }
 
-    returns(code:string, hour:number) {
+    returns(code:string, hour:number): OperationalResult {
         const equipment = this.inventory.find(code)
 
         if (equipment === null){
@@ -191,6 +191,35 @@ export class LoanSystem {
             msg: `${code} equipment gived back successfully`
         }
 
+    }
+
+    reviews (damaged:boolean): OperationalResult {
+        const equipment = this.reviewQueue.dequeue()
+
+        if (equipment === null){
+            return {ok:false, msg: `There is not an equipment registered in review Queue`}
+        }
+
+        if (damaged){
+            equipment.setState(State.MANTENIMIENTO);
+            this.damagedReturns ++;
+            return {ok:true, msg: `R5: ${equipment.getCode()} is damaged and now in maintainance`}
+        }
+        if (equipment.getBorrowings() >= 5){
+            equipment.setState(State.MANTENIMIENTO);
+            this.preventiveMaintenance.add(equipment.getCode());
+            return {ok:true, msg: `R8: ${equipment.getCode()} has 5 or more borrowings, now in preventive maintainance`}
+        }
+        const stacked = this.carts.get(equipment.getType()!)!.push(equipment);
+
+        if (stacked === false){
+            equipment.setState(State.EN_REVISION);
+            this.storeQueue.enqueue(equipment);
+            return {ok:true, msg: `R7: ${equipment.getCode()} approved but the cart is full, it waits in storeQueue`}
+        }
+
+        equipment.setState(State.EN_CARRO);
+        return {ok:true, msg: `${equipment.getCode()} approved and stacked in its cart`}
     }
 
 
