@@ -165,5 +165,33 @@ export class LoanSystem {
         return false
     }
 
+    returns(code:string, hour:number) {
+        const equipment = this.inventory.find(code)
+
+        if (equipment === null){
+            return {ok:false, msg:`${code} is not registered `}
+        }
+        if (!(equipment.getState() === State.PRESTADO)){
+            return {ok:false, msg:`${code} is not currently on loan, his current state is: ${equipment.getState()}`}
+        }
+        const duration = hour - Number(equipment.getLoanTime());
+
+        if (duration > this.maxLoanMinutes){
+            this.lateReturns++;
+        }
+        equipment.setState(State.EN_REVISION);
+        equipment.setLoanTime(null);
+        this.borrowers.delete(code);
+
+        //enqueue in reviewQueue
+        this.reviewQueue.enqueue(equipment)
+
+        return {
+            ok: true,
+            msg: `${code} equipment gived back successfully`
+        }
+
+    }
+
 
 }
