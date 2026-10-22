@@ -3,19 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Prestamo de equipos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 10px; font-size: 14px; }
+        section { border: 1px solid #999; padding: 8px; margin-bottom: 10px; }
+        h2 { margin: 0 0 8px 0; font-size: 16px; }
+        table { border-collapse: collapse; }
+        td, th { border: 1px solid #999; padding: 2px 8px; }
+        .row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .stack, .queue { margin-bottom: 8px; }
+        .box { border: 1px solid #333; padding: 3px 8px; margin: 2px; display: inline-block; }
+        .top { background: gold; font-weight: bold; }
+        .tag { font-size: 11px; color: #555; }
+        #message { font-weight: bold; margin: 6px 0; min-height: 18px; }
+    </style>
 </head>
 <body>
     <h1>Prestamo de equipos</h1>
-    <button id="btn-sample"> Cargar datos de ejemplo</button>
+
+    <div>
+        Hora (minuto de la jornada): <input id="hour" type="number" value="0" style="width:70px">
+        <button id="btn-sample">Cargar datos de ejemplo</button>
+    </div>
     <div id="message"></div>
 
-    <section id="inventory"><h2>1. Inventario</h2></section>
-    <section id="counter"><h2>2. Mostrador de préstamo</h2></section>
-    <section id="carts"><h2>3. Carros</h2></section>
-    <section id="review"><h2>4. Revisión y reportes</h2></section>
-    <section id="logs"><h2>Bitácora</h2></section>
+    <section>
+        <h2>1. Inventario</h2>
+        Filtrar tipo: <select id="filter-type"></select>
+        estado: <select id="filter-state"></select>
+        <div id="inventory"></div>
+        <p>
+            Buscar equipo: <input id="search-code" placeholder="PORT-01">
+            <button id="btn-search">Buscar</button>
+            <span id="search-result"></span>
+        </p>
+    </section>
+
+    <section>
+        <h2>2. Mostrador de prestamo</h2>
+        Estudiante: <input id="student" placeholder="E1" style="width:70px">
+        Tipo: <select id="type"></select>
+        <button id="btn-request">Solicitar</button>
+        <button id="btn-lend">Prestar (tope del carro)</button>
+        <button id="btn-serve">Atender espera</button>
+        <p>
+            Devolver codigo: <input id="return-code" placeholder="PORT-01" style="width:90px">
+            <button id="btn-return">Devolver</button>
+        </p>
+        <h3>Listas de espera</h3>
+        <div id="wait-queues"></div>
+    </section>
+
+    <section>
+        <h2>3. Carros</h2>
+        <div id="carts" class="row"></div>
+        <p>
+            Prestamo dirigido - codigo: <input id="directed-code" placeholder="PORT-01" style="width:90px">
+            docente: <input id="teacher" placeholder="DOC-1" style="width:70px">
+            <button id="btn-directed">Prestar dirigido</button>
+        </p>
+        <div id="directed-info"></div>
+        <ol id="steps"></ol>
+    </section>
+
+    <section>
+        <h2>4. Revision y reportes</h2>
+        <button id="btn-approve">Aprobar</button>
+        <button id="btn-damage">Reportar dano</button>
+        <div id="review-queue"></div>
+        <div id="store-queue"></div>
+        <h3>Metricas</h3>
+        <div id="report"></div>
+    </section>
+
+    <section>
+        <h2>Bitacora</h2>
+        <div id="logs"></div>
+    </section>
 
     <script src="dist/app.js"></script>
 </body>
-
 </html>
